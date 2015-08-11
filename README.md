@@ -1,3 +1,3 @@
-# X11 Cursors in Arch Linux style
+# X11 Cursors for Arch Linux #
 
-_License_ [TFL](http://github.com/ukoreh/TrueFreeLicense)
+*License* : [TFL](http://github.com/ukoreh/TrueFreeLicense)
