@@ -1,5 +1,8 @@
 # X11 Cursors for Arch Linux #
 
+### Sample ####
+![](https://raw.githubusercontent.com/ukoreh/ArchLinuxCursors/master/Sample.png)
+
 *License* : [TFL](http://github.com/ukoreh/TrueFreeLicense)
 
 ### X11 Cursors Possible ###
@@ -10,5 +13,3 @@ https://tronche.com/gui/x/xlib/appendix/b
 If the Tronche's site goes down then [here](X-Font-Cursors.pdf) is a copy of the page.
 
 
-### Sample ####
-![](https://raw.githubusercontent.com/ukoreh/ArchLinuxCursors/master/Sample.png)
