@@ -1,36 +1,65 @@
+#!/bin/sh
 
-# By default depends on "xcf2png" for GIMP to PNG export
-# ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~
-declare XcfToPngConverter=xcf2png
-declare XcfToPngConverterFlags=-o
+# Depends On
+# ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~
+#   - "xcf2png" for GIMP to PNG export
+#   - "convert" from "ImageMagick" to resize images
+#   - "xcursorgen" for PNG to X11 cursor export ([size] [x_cordinate] [y_cordinate] [png_file] [refresh_rate])
 
-# By default depends on "xcursorgen" for PNG to X11 cursor export
-# Format: [size] [x_cordinate] [y_cordinate] [png_file] [refresh_rate]
-# ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~
-declare PngToX11CursorConverter=xcursorgen
-
-declare CursorsFolder=Cursors
-declare CursorsConfigFolder=CursorsConfig
+declare GimpCursorsFolder=GimpCursors
 declare TemplateFolder=X11FolderTemplate
 declare TempFodler=Temp
-
 declare CursorPackageName=ArchLinuxCursors
 
-mkdir $TempFodler
-mkdir $CursorPackageName
-#mkdir $CursorPackageNameSmall
+function GeneratePngFromGimpFiles() {
+    local imageSize=$1
+    local CursorPackageNameWithSuffix=$CursorPackageName$imageSize
+    
+    rm -r $TempFodler 2> /dev/null
+    rm -r $CursorPackageNameWithSuffix 2> /dev/null
+    
+    mkdir $TempFodler
+    mkdir $CursorPackageName
 
-# Generate Cursors x64 (not 64 bit:)
-# ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~
-cp -r $TemplateFolder/* $CursorPackageName/
-for file in `ls $CursorsFolder/*.xcf`
-do
-    declare pngFile=$TempFodler/$(basename "$file").png
-	$XcfToPngConverter $file $XcfToPngConverterFlags $pngFile
-	
-    echo "64 0 0 $pngFile 1000" > $TempFodler/CursorConfig
-    $PngToX11CursorConverter $TempFodler/CursorConfig $pngFile.x11cursor
-done
+    cp -r $TemplateFolder/* $CursorPackageName/
+    for file in `ls $GimpCursorsFolder/*.xcf`
+    do
+        declare pngFile=$TempFodler/$(basename "$file").png
+        xcf2png $file -o $pngFile
+
+        convert $pngFile -resize 32x32 $pngFile
+    done
+}
+
+echo "64 5 5 $TempFodler/Pointer.xcf.png 1000"      > $TempFodler/CursorConfig
+echo "32 2 2 $TempFodler/Pointer.xcf.png 1000"      > $TempFodler/CursorConfig
+xcursorgen $TempFodler/CursorConfig $TempFodler/Pointer.xcf.png.x11cursor
+
+echo "64 5 5 $TempFodler/PointerBusy.xcf.png 1000"  > $TempFodler/CursorConfig
+echo "32 2 2 $TempFodler/PointerBusy.xcf.png 1000"  > $TempFodler/CursorConfig
+xcursorgen $TempFodler/CursorConfig $TempFodler/PointerBusy.xcf.png.x11cursor
+
+echo "64 32 32 $TempFodler/Busy.xcf.png 1000"       > $TempFodler/CursorConfig
+echo "32 16 16 $TempFodler/Busy.xcf.png 1000"       > $TempFodler/CursorConfig
+xcursorgen $TempFodler/CursorConfig $TempFodler/Busy.xcf.png.x11cursor
+
+echo "64 32 32 $TempFodler/Move.xcf.png 1000"       > $TempFodler/CursorConfig
+echo "32 16 16 $TempFodler/Move.xcf.png 1000"       > $TempFodler/CursorConfig
+xcursorgen $TempFodler/CursorConfig $TempFodler/Move.xcf.png.x11cursor
+
+echo "64 10 5 $TempFodler/Hand.xcf.png 1000"        > $TempFodler/CursorConfig
+echo "32 5 2 $TempFodler/Hand.xcf.png 1000"        > $TempFodler/CursorConfig
+xcursorgen $TempFodler/CursorConfig $TempFodler/Hand.xcf.png.x11cursor
+
+echo "64 32 64 $TempFodler/Denier.xcf.png 1000"     > $TempFodler/CursorConfig
+echo "32 16 32 $TempFodler/Denier.xcf.png 1000"     > $TempFodler/CursorConfig
+xcursorgen $TempFodler/CursorConfig $TempFodler/Denier.xcf.png.x11cursor
+
+
+
+###echo "32 0 0 $pngFile 1000" > $TempFodler/CursorConfig
+###xcursorgen $TempFodler/CursorConfig $pngFile.x11cursor
+
 
 # Supported: Busy Denier Hand Move PointerBusy Pointer
 # Make to be like this https://tronche.com/gui/x/xlib/appendix/b/
@@ -79,4 +108,5 @@ ln -s $CursorPackageName/cursors/hand1             $CursorPackageName/cursors/9d
 ln -s $CursorPackageName/cursors/question_arrow    $CursorPackageName/cursors/d9ce0ab605698f320427677b458ad60b
 ln -s $CursorPackageName/cursors/hand              $CursorPackageName/cursors/e29285e634086352946a0e7090d73106
 #ln -s top_right_corner  fcf1c3c7cd4491d801f1e1c78f100000
+
 
